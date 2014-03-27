@@ -19,14 +19,14 @@ class motorControlBoard:
     def __init__(self, board_address):
         if isinstance(board_address, int):
             if board_address > 0 and board_address < 0x78:
-                self.__board_I2C_address = int
+                self.__board_I2C_address = board_address
             else:
                 raise Exception("Board address must be an integer between 0 and 0b1111000 (=120) exclusive.")
         else:
                 raise Exception("Board address must be an integer.")
         self.__bus = SMBus(1)   # FIXME = have an option to make this zero for the old Raspberry Pis
 
-    def set_speeds(left_speed, right_speed):
+    def set_speeds(self, left_speed, right_speed):
         # Enforce limits due to 8-bit resolution
         if(left_speed < -0xff):		left_speed = -0xff
         if(left_speed > +0xff):		left_speed = +0xff
@@ -40,4 +40,4 @@ class motorControlBoard:
         if(right_speed < 0):    direction |= MOTOR_CONTROL_RIGHT_BACK
         elif(right_speed > 0):  direction |= MOTOR_CONTROL_RIGHT_FORE
 
-        bus.write_i2c_block_data(self.__board_I2C_address, MOTOR_CONTROL_SET_DIR_SPEED_CMD, [direction, abs(left_speed), abs(right_speed)])
+        self.__bus.write_i2c_block_data(self.__board_I2C_address, MOTOR_CONTROL_SET_DIR_SPEED_CMD, [direction, abs(left_speed), abs(right_speed)])
