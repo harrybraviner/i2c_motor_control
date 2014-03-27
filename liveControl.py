@@ -11,9 +11,10 @@ def interruptStop(signal_number, stack_frame):
 
 # Setup
 mb = motorControlBoard(0x0a)
+signal.signal(signal.SIGALRM, interruptStop)
 quit = False
 
-helpString = "Commands are:\nfore [time]\t-\tDrive forward for [time] seconds.\nstop\t-\tStop."
+helpString = "Commands are:\nfore [time]\t-\tDrive forward for [time] seconds.\nback [time]\t-\tDrive left for [time] seconds.\nleft [time]\t-\tTurn left for [time] seconds.\nright [time]\t-\tTurn right for [time] seconds.\nstop\t\t-\tStop."
 
 while(not quit):
     instruction = raw_input(">> ")  # Get a command string from the user
@@ -25,6 +26,9 @@ while(not quit):
         except:
             print instruction[1] + ' is not a valid time.' 
         else:
+            if run_time > 3 or run_time != run_time:
+                print 'Run time limited to 3 seconds.'
+                run_time = 3.0
             if instruction[0] == 'fore' or instruction[0] == 'f':
                 mb.set_speeds(0xff, 0xff)
                 signal.setitimer(signal.ITIMER_REAL, run_time)
